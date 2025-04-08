@@ -1,0 +1,47 @@
+version: '3.9'
+
+services:
+  cliente-gui:
+    build:
+      context: ./cliente
+      dockerfile: ../Dockerfile
+    volumes:
+      - ./cliente:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /home/armando/Documentos/:/host/ufpi
+    environment:
+      - DISPLAY=${DISPLAY}
+    command: sh -c "javac ClienteGUI.java && java ClienteGUI"
+
+  mestre:
+    build:
+      context: ./mestre
+      dockerfile: ../Dockerfile
+    volumes:
+      - ./mestre:/app
+    ports:
+      - "8080:8080"
+    command: sh -c "javac Mestre.java && java Mestre"
+    depends_on:
+      - escravo-letras
+      - escravo-numeros
+
+  escravo-letras:
+    build:
+      context: ./escravo-letras
+      dockerfile: ../Dockerfile
+    volumes:
+      - ./escravo-letras:/app
+    ports:
+      - "8081:8081"
+    command: sh -c "javac EscravoLetras.java && java EscravoLetras"
+
+  escravo-numeros:
+    build:
+      context: ./escravo-numeros
+      dockerfile: ../Dockerfile
+    volumes:
+      - ./escravo-numeros:/app
+    ports:
+      - "8082:8082"
+    command: sh -c "javac EscravoNumeros.java && java EscravoNumeros"
